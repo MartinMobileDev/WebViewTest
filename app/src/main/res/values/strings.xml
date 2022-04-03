@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WebView Test</string>
+    <string name="toolbar_name">Hacker News</string>
+    <string name="back_arrow">Back</string>
+</resources>
