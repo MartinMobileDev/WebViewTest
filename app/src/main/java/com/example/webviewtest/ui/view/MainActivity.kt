@@ -1,11 +1,9 @@
 package com.example.webviewtest.ui.view
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -16,7 +14,8 @@ import com.example.webviewtest.R
 import com.example.webviewtest.adapter.NoticeListAdapter
 import com.example.webviewtest.adapter.OnClickListener
 import com.example.webviewtest.databinding.ActivityMainBinding
-import com.example.webviewtest.data.model.Notice
+import com.example.webviewtest.data.model.NoticeModel
+import com.example.webviewtest.domain.model.Notice
 import com.example.webviewtest.ui.viewModel.MainViewModel
 import com.example.webviewtest.utils.SwipeGesture
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var mlinearLayoutManager: LinearLayoutManager
     private lateinit var madapter: NoticeListAdapter
     private val mainViewModel: MainViewModel by viewModels()
-    private val swipeGesture = object : SwipeGesture(this@MainActivity) {
+    private val swipeGesture = object : SwipeGesture() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             when (direction) {
                 ItemTouchHelper.LEFT -> {

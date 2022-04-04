@@ -3,6 +3,9 @@ package com.example.webviewtest.ui.view
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import com.example.webviewtest.R
 import com.example.webviewtest.databinding.ActivityWebViewBinding
 
@@ -21,11 +24,21 @@ class WebViewActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
-        binding.webView.settings.loadWithOverviewMode = true;
-        binding.webView.settings.useWideViewPort = true;
-        binding.webView.settings.javaScriptEnabled = true;
-        binding.webView.settings.javaScriptCanOpenWindowsAutomatically = true;
-        binding.webView.loadUrl(intent.getStringExtra("HTML_TEXT").toString())
+        binding.webView.apply {
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    return false
+                }
+            }
+            settings.loadWithOverviewMode = true
+            settings.useWideViewPort = true
+            settings.javaScriptEnabled = true
+            settings.javaScriptCanOpenWindowsAutomatically = true
+            loadUrl(intent.getStringExtra("HTML_TEXT").toString())
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

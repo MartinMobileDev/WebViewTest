@@ -3,13 +3,10 @@ package com.example.webviewtest.ui.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.webviewtest.data.model.Notice
-import com.example.webviewtest.data.network.APIService
+import com.example.webviewtest.data.model.NoticeModel
 import com.example.webviewtest.domain.GetNewsUseCase
-import com.example.webviewtest.utils.RetrofitHelper.getRetrofit
+import com.example.webviewtest.domain.model.Notice
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,6 +26,10 @@ class MainViewModel @Inject constructor(private val getNewsUseCase: GetNewsUseCa
                 isLoading.postValue(false)
             }
         }
+    }
+
+    fun checkForInternet(){
+
     }
 
     fun getAllNews() {

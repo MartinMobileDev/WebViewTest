@@ -10,15 +10,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.webviewtest.R
-import com.example.webviewtest.data.model.Notice
+import com.example.webviewtest.data.model.NoticeModel
 import com.example.webviewtest.databinding.ItemNoticeBinding
+import com.example.webviewtest.domain.model.Notice
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class NoticeListAdapter(private var listener: OnClickListener) :
-    ListAdapter<Notice, RecyclerView.ViewHolder>(NewsDiffCallback()) {
+    ListAdapter<Notice, NoticeListAdapter.ViewHolder>(NewsDiffCallback()) {
     private lateinit var mContext: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,9 +28,9 @@ class NoticeListAdapter(private var listener: OnClickListener) :
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val notice = getItem(position)
-        with(holder as ViewHolder) {
+        with(holder) {
             setListener(notice)
             binding.tvTitle.text = notice.title
             binding.tvAuthor.text = notice.author
