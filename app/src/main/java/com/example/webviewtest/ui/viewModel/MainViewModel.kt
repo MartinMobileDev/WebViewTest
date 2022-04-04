@@ -3,7 +3,6 @@ package com.example.webviewtest.ui.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.webviewtest.data.model.NoticeModel
 import com.example.webviewtest.domain.GetNewsUseCase
 import com.example.webviewtest.domain.model.Notice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,35 +16,26 @@ class MainViewModel @Inject constructor(private val getNewsUseCase: GetNewsUseCa
     val noticeListModel = MutableLiveData<List<Notice>>()
     val isLoading = MutableLiveData<Boolean>()
 
-    fun onCreate() {
+    fun onCreateApi() {
         viewModelScope.launch {
             isLoading.postValue(true)
-            val result = getNewsUseCase()
+            val result = getNewsUseCase.getAllNewsFromApi()
             if(!result.isNullOrEmpty()){
-                noticeListModel.postValue(result!!)
+                noticeListModel.postValue(result)
                 isLoading.postValue(false)
             }
         }
     }
 
-    fun checkForInternet(){
-
-    }
-
-    fun getAllNews() {
-        isLoading.postValue(true)
-
-        //TODO AQUI METER LO DE ROOM Y ACTULIZACION DE ITEMS DEL RECYCLERVIEW
-
-        isLoading.postValue(false)
-/*        CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(APIService::class.java).getNews("mobile")
-            val response = call.body()
-            if (call.isSuccessful) {
-                val noticeList: List<Notice>? = response
-                noticeListModel.postValue(noticeList!!)
+    fun onCreateDatabase() {
+        viewModelScope.launch {
+            isLoading.postValue(true)
+            val result = getNewsUseCase.getAllNewsFromDatabase()
+            if(!result.isNullOrEmpty()){
+                noticeListModel.postValue(result)
+                isLoading.postValue(false)
             }
-        }*/
+        }
     }
 
     fun clearNews() {

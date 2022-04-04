@@ -7,14 +7,27 @@ import javax.inject.Inject
 
 class GetNewsUseCase @Inject constructor(private val repository: NoticeRepository) {
 
-    suspend operator fun invoke(): List<Notice> {
+    suspend fun getAllNewsFromApi(): List<Notice> {
         val notices = repository.getAllNewsFromApi()
-        return if (notices.isNotEmpty()) {
-            repository.clearNotices()
-            repository.insertNotices(notices.map { it.toDatabase() })
-            notices
-        } else {
-            repository.getAllNewsFromDatabase()
+        return when {
+            notices.isNotEmpty() -> {
+                repository.clearNotices()
+                repository.insertNotices(notices.map { it.toDatabase() })
+                notices
+            }
+            else -> emptyList()
+        }
+    }
+
+    suspend fun getAllNewsFromDatabase(): List<Notice> {
+        val notices = repository.getAllNewsFromDatabase()
+        return when {
+            notices.isNotEmpty() -> {
+                repository.clearNotices()
+                repository.insertNotices(notices.map { it.toDatabase() })
+                notices
+            }
+            else -> emptyList()
         }
     }
 }

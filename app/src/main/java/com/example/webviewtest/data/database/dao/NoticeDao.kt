@@ -8,7 +8,7 @@ import retrofit2.http.DELETE
 
 @Dao
 interface NoticeDao {
-    @Query("SELECT * FROM notice_table ORDER BY createdAt DESC")
+    @Query("SELECT * FROM notice_table")
     suspend fun getAllNotice():List<NoticeEntity>
 
     @Insert

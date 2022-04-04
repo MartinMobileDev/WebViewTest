@@ -2,21 +2,22 @@ package com.example.webviewtest.ui.view
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.webviewtest.R
+import com.example.webviewtest.WebViewTest
 import com.example.webviewtest.adapter.NoticeListAdapter
 import com.example.webviewtest.adapter.OnClickListener
 import com.example.webviewtest.databinding.ActivityMainBinding
-import com.example.webviewtest.data.model.NoticeModel
 import com.example.webviewtest.domain.model.Notice
 import com.example.webviewtest.ui.viewModel.MainViewModel
+import com.example.webviewtest.utils.NetworkConnection
 import com.example.webviewtest.utils.SwipeGesture
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,13 +28,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var mlinearLayoutManager: LinearLayoutManager
     private lateinit var madapter: NoticeListAdapter
     private val mainViewModel: MainViewModel by viewModels()
-    private val swipeGesture = object : SwipeGesture() {
+    private val networkConnection = NetworkConnection(WebViewTest.applicationContext())
+
+    private val swipeGesture = object : SwipeGesture(WebViewTest.applicationContext()) {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             when (direction) {
                 ItemTouchHelper.LEFT -> {
                     val notice = madapter.currentList[viewHolder.adapterPosition]
-
-                    //creating new list from previous one
                     val list = ArrayList<Notice>(madapter.currentList)
                     list.remove(notice)
                     madapter.submitList(list)
@@ -46,18 +47,30 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        mainViewModel.onCreate()
+        checkForInternetConnection()
         initRecyclerView()
         setupViewModel()
     }
 
+    private fun checkForInternetConnection() {
+        networkConnection.observe(this) { isConnected ->
+            if (isConnected) {
+                mainViewModel.onCreateApi()
+                Toast.makeText(this, "Connectado", Toast.LENGTH_SHORT).show()
+            } else {
+                mainViewModel.onCreateDatabase()
+                Toast.makeText(this, "Desconnectado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun setupViewModel() {
-        mainViewModel.isLoading.observe(this, Observer {
+        mainViewModel.isLoading.observe(this) {
             binding.progress.isVisible = it
-        })
-        mainViewModel.noticeListModel.observe(this, Observer { noticeList ->
+        }
+        mainViewModel.noticeListModel.observe(this) { noticeList ->
             madapter.submitList(noticeList)
-        })
+        }
     }
 
     @SuppressLint("ResourceAsColor", "NotifyDataSetChanged")
@@ -72,35 +85,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         binding.swipeContainer.setColorSchemeResources(R.color.purple_500)
         binding.swipeContainer.setOnRefreshListener {
             mainViewModel.clearNews()
-            mainViewModel.onCreate()
+            checkForInternetConnection()
             madapter.notifyDataSetChanged()
             binding.swipeContainer.isRefreshing = false
         }
-        //ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvNews)
         val touchHelper = ItemTouchHelper(swipeGesture)
         touchHelper.attachToRecyclerView(binding.rvNews)
     }
-
-
-/*    private val itemTouchHelperCallback =
-        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ) = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                Log.d(TAG, "onSwiped: placesList ${madapter.currentList.size}")
-
-                val notice = madapter.currentList[viewHolder.adapterPosition]
-
-                //creating new list from previous one
-                val list = ArrayList<Notice>(madapter.currentList)
-                list.remove(notice)
-                madapter.submitList(list)
-            }
-        }*/
 
     override fun onClick(notice: Notice) {
         Intent(this, WebViewActivity::class.java).also {
