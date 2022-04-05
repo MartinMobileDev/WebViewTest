@@ -39,6 +39,5 @@ abstract class NoticeDatabase : RoomDatabase() {
             }
             return INSTANCE
         }
-
     }
 }

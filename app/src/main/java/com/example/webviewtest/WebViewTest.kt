@@ -21,10 +21,6 @@ class WebViewTest : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // initialize for any
-
-        // Use ApplicationContext.
-        // example: SharedPreferences etc...
         applicationContext()
     }
 }

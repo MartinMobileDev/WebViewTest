@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.webviewtest.R
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
-
 abstract class SwipeGesture(context: Context) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
     private val deleteColor = ContextCompat.getColor(context, R.color.red)

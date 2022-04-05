@@ -16,7 +16,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class NoticeListAdapter(private var listener: OnClickListener) :
     ListAdapter<Notice, NoticeListAdapter.ViewHolder>(NewsDiffCallback()) {
     private lateinit var mContext: Context
@@ -77,6 +76,5 @@ class NoticeListAdapter(private var listener: OnClickListener) :
         override fun areContentsTheSame(oldItem: Notice, newItem: Notice): Boolean {
             return oldItem == newItem
         }
-
     }
 }
