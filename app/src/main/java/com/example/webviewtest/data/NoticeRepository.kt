@@ -27,4 +27,8 @@ class NoticeRepository @Inject constructor(
     suspend fun clearNotices() {
         noticeDao.deleteAllNotices()
     }
+
+    suspend fun updateNotice(id: Int) {
+        noticeDao.updateNotice(id)
+    }
 }

@@ -3,7 +3,6 @@ package com.example.webviewtest.ui.view
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -14,6 +13,8 @@ import com.example.webviewtest.R
 import com.example.webviewtest.WebViewTest
 import com.example.webviewtest.adapter.NoticeListAdapter
 import com.example.webviewtest.adapter.OnClickListener
+import com.example.webviewtest.data.database.NoticeDatabase
+import com.example.webviewtest.data.database.entities.toDatabase
 import com.example.webviewtest.databinding.ActivityMainBinding
 import com.example.webviewtest.domain.model.Notice
 import com.example.webviewtest.ui.viewModel.MainViewModel
@@ -25,8 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnClickListener {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mlinearLayoutManager: LinearLayoutManager
-    private lateinit var madapter: NoticeListAdapter
+    private lateinit var mLinearLayoutManager: LinearLayoutManager
+    private lateinit var mAdapter: NoticeListAdapter
     private val mainViewModel: MainViewModel by viewModels()
     private val networkConnection = NetworkConnection(WebViewTest.applicationContext())
 
@@ -34,10 +35,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             when (direction) {
                 ItemTouchHelper.LEFT -> {
-                    val notice = madapter.currentList[viewHolder.adapterPosition]
-                    val list = ArrayList<Notice>(madapter.currentList)
+                    val notice = mAdapter.currentList[viewHolder.adapterPosition]
+                    notice.active = false
+                    mainViewModel.updateNotice(notice.toDatabase().id)
+
+                    val list = ArrayList<Notice>(mAdapter.currentList)
                     list.remove(notice)
-                    madapter.submitList(list)
+                    mAdapter.submitList(list)
                 }
             }
         }
@@ -47,19 +51,19 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        NoticeDatabase.createDatabase(WebViewTest.applicationContext())
         checkForInternetConnection()
         initRecyclerView()
         setupViewModel()
     }
 
+
     private fun checkForInternetConnection() {
         networkConnection.observe(this) { isConnected ->
             if (isConnected) {
                 mainViewModel.onCreateApi()
-                Toast.makeText(this, "Connectado", Toast.LENGTH_SHORT).show()
             } else {
                 mainViewModel.onCreateDatabase()
-                Toast.makeText(this, "Desconnectado", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -69,24 +73,24 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             binding.progress.isVisible = it
         }
         mainViewModel.noticeListModel.observe(this) { noticeList ->
-            madapter.submitList(noticeList)
+            mAdapter.submitList(noticeList)
         }
     }
 
     @SuppressLint("ResourceAsColor", "NotifyDataSetChanged")
     private fun initRecyclerView() {
 
-        madapter = NoticeListAdapter(this)
-        mlinearLayoutManager = LinearLayoutManager(this)
+        mAdapter = NoticeListAdapter(this)
+        mLinearLayoutManager = LinearLayoutManager(this)
         binding.rvNews.apply {
-            layoutManager = mlinearLayoutManager
-            adapter = madapter
+            layoutManager = mLinearLayoutManager
+            adapter = mAdapter
         }
         binding.swipeContainer.setColorSchemeResources(R.color.purple_500)
         binding.swipeContainer.setOnRefreshListener {
             mainViewModel.clearNews()
             checkForInternetConnection()
-            madapter.notifyDataSetChanged()
+            mAdapter.notifyDataSetChanged()
             binding.swipeContainer.isRefreshing = false
         }
         val touchHelper = ItemTouchHelper(swipeGesture)

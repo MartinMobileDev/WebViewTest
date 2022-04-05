@@ -19,15 +19,8 @@ class GetNewsUseCase @Inject constructor(private val repository: NoticeRepositor
         }
     }
 
-    suspend fun getAllNewsFromDatabase(): List<Notice> {
-        val notices = repository.getAllNewsFromDatabase()
-        return when {
-            notices.isNotEmpty() -> {
-                repository.clearNotices()
-                repository.insertNotices(notices.map { it.toDatabase() })
-                notices
-            }
-            else -> emptyList()
-        }
-    }
+    suspend fun updateNotice(id: Int) = repository.updateNotice(id)
+
+    suspend fun getAllNewsFromDatabase(): List<Notice> = repository.getAllNewsFromDatabase()
+
 }

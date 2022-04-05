@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.webviewtest.R
-import com.example.webviewtest.data.model.NoticeModel
 import com.example.webviewtest.databinding.ItemNoticeBinding
 import com.example.webviewtest.domain.model.Notice
 import java.text.ParseException
@@ -30,12 +29,14 @@ class NoticeListAdapter(private var listener: OnClickListener) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val notice = getItem(position)
-        with(holder) {
-            setListener(notice)
-            binding.tvTitle.text = notice.title
-            binding.tvAuthor.text = notice.author
-            notice.createdAt?.let {
-                binding.tvTimeAgo.text = convertTime(it)
+        if (notice.active!!) {
+            with(holder) {
+                setListener(notice)
+                binding.tvTitle.text = notice.title
+                binding.tvAuthor.text = notice.author
+                notice.createdAt?.let {
+                    binding.tvTimeAgo.text = convertTime(it)
+                }
             }
         }
     }

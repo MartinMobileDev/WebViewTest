@@ -25,6 +25,6 @@ class WebViewTest : Application() {
 
         // Use ApplicationContext.
         // example: SharedPreferences etc...
-        val context: Context = WebViewTest.applicationContext()
+        applicationContext()
     }
 }
